@@ -1,0 +1,220 @@
+// finish (and comment) me!
+
+package gui;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import filters.EdgeDetectFilter;
+import filters.EdgeHighlightFilter;
+import filters.Filter;
+import filters.FlipHorizontalFilter;
+import filters.FlipVerticalFilter;
+import filters.GrayscaleFilter;
+import filters.SharpenFilter;
+import filters.SoftenFilter;
+import image.PixelImage;
+
+/**
+ * 
+ * @author Patrick Stevens
+ * @version 1.0
+ */
+public class SnapShopGUI {
+    /**
+     * 
+     */
+    private static final Toolkit KIT = Toolkit.getDefaultToolkit();
+    /**
+     * 
+     */
+    private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
+    /**
+     * 
+     */
+    private static final int SCREEN_HEIGHT = SCREEN_SIZE.width;
+    //private static final String Component = null;
+    /**
+     * 
+     */
+    private JPanel myFilterPanel;
+    /**
+     * 
+     */
+    private JPanel myImagePanel;
+    /**
+     * 
+     */
+    private JPanel myUtilityPanel;
+    /**
+     * 
+     */
+    private JLabel myImageHolder;
+    /**
+     * 
+     */
+    private final JFrame myFrame;
+    private JButton myOpenButton;
+    private JButton mySaveButton;
+    private JButton myCloseButton;
+    /**
+     * 
+     */
+    private final JFileChooser myChooser;
+    /**
+     * 
+     */
+    private PixelImage myImage;
+    
+   // private final JLabel myLabel;
+    
+    //private final List<JButton> myButtons;
+
+    /**
+     * 
+     */
+    private File myFile;
+    /**
+     * 
+     */
+    private final List<Filter> myFilterList;
+    /**
+     * 
+     */
+    private final List<JButton> myButtonList;
+    
+    /**
+     * 
+     */
+    public SnapShopGUI() {
+        
+        myFrame = new JFrame("TCSS 305 SnapShop");
+        myChooser = new JFileChooser(".");
+        myFrame.setLocationRelativeTo(null);
+        
+        myButtonList = new ArrayList<JButton>();
+        myFilterList = new ArrayList<Filter>();
+        
+        myImageHolder = new JLabel();
+        
+        //myFrame.setMinimumSize(SCREEN_SIZE);
+        
+        
+        //myFrame = new JPanel(new GridBadLayout)
+        
+    }
+    /**
+     * 
+     */
+    public void start() {
+        myUtilityPanel = new JPanel(new FlowLayout());
+        myImagePanel = new JPanel(new BorderLayout());
+        myFilterPanel = new JPanel(new FlowLayout());
+
+        myImagePanel.add(myFilterPanel, BorderLayout.NORTH);
+        myImagePanel.add(myImageHolder, BorderLayout.CENTER);
+        myImagePanel.add(myUtilityPanel, BorderLayout.SOUTH);
+        
+        myImageHolder = new JLabel();
+        myImageHolder.setHorizontalAlignment(JLabel.CENTER);
+        myImageHolder.setVerticalAlignment(JLabel.CENTER); 
+        
+        myImagePanel.add(myImageHolder, BorderLayout.CENTER);
+        
+        createFilterButtons(myFilterPanel);
+        
+        myFrame.add(myFilterPanel, BorderLayout.NORTH);
+        myFrame.add(myImagePanel, BorderLayout.CENTER);
+        myFrame.add(myUtilityPanel, BorderLayout.SOUTH);
+        
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //myFrame.setVisible(true);
+        myFrame.pack();
+        
+        myFrame.setMinimumSize(new Dimension(myFrame.getWidth(), myFrame.getHeight()));
+        //myDFrame.
+        
+        myFrame.setVisible(true);
+    }
+    /**
+     * 
+     * @param thePanel
+     */
+    private void createFilterButtons(final JPanel thePanel) {
+        myFilterList.add(new EdgeDetectFilter());
+        myFilterList.add(new EdgeHighlightFilter());
+        myFilterList.add(new FlipHorizontalFilter());
+        myFilterList.add(new FlipVerticalFilter());
+        myFilterList.add(new GrayscaleFilter());
+        myFilterList.add(new SharpenFilter());
+        myFilterList.add(new SoftenFilter());
+        
+        final Component[] compArray = thePanel.getComponents();
+        
+        for (final Component c : compArray) {
+            if (c instanceof JButton) {
+                myButtonList.add((JButton) c);
+            }
+        }
+                        
+    }
+    /**
+     * 
+     * @param theFilter
+     * @return filterButton
+     */
+    private JButton createFilterButtons(final Filter theFilter) {
+        final JButton filterButton = new JButton(theFilter.getDescription());
+        filterButton.addActionListener(new ActionListener() {
+            /**
+             * 
+             */
+            @Override
+            public void actionPerformed(final ActionEvent theActionEvent) {
+                theFilter.filter(myImage);
+                myImageHolder.setIcon(new ImageIcon(myImage));
+                myFrame.pack();
+            }
+            
+        });
+        return filterButton;
+    }
+    /**
+     * 
+     */
+    private void createOptionButtons() {
+        myOpenButton = new JButton("Open...");
+        mySaveButton = new JButton("Save as...");
+        myCloseButton = new JButton("Close Image");
+        mySaveButton.setEnabled(false);
+        myCloseButton.setEnabled(false);
+        myUtilityPanel.add(myOpenButton);
+        myUtilityPanel.add(mySaveButton);
+        myUtilityPanel.add(myCloseButton);
+        
+        ActionListener pls = new ActionListener () {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+               myFile
+                
+            }
+            
+        };
+    }
+}

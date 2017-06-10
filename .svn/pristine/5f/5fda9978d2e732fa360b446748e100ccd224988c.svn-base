@@ -1,0 +1,306 @@
+// finish (and comment) me!
+
+package gui;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import filters.EdgeDetectFilter;
+import filters.EdgeHighlightFilter;
+import filters.Filter;
+import filters.FlipHorizontalFilter;
+import filters.FlipVerticalFilter;
+import filters.GrayscaleFilter;
+import filters.SharpenFilter;
+import filters.SoftenFilter;
+import image.PixelImage;
+
+/**
+ * 
+ * @author Patrick Stevens
+ * @version 1.0
+ */
+public class SnapShopGUI {
+    /**
+     * 
+     */
+    private static final Toolkit KIT = Toolkit.getDefaultToolkit();
+    /**
+     * 
+     */
+    private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
+    /**
+     * 
+     */
+    private static final int SCREEN_HEIGHT = SCREEN_SIZE.width;
+    /**
+     * 
+     */
+    private static final int SCREEN_WIDTH = SCREEN_SIZE.height;
+    private static final int FILTERS = 7;
+    /**
+     * 
+     */
+    private JPanel myFilterPanel;
+    /**
+     * 
+     */
+    private JPanel myImagePanel;
+    private JPanel myMainPanel;
+    /**
+     * 
+     */
+    private JPanel myUtilityPanel;
+    /**
+     * 
+     */
+    private JLabel myImageHolder;
+    /**
+     * 
+     */
+    private final JFrame myFrame;
+    private JButton myOpenButton;
+    private JButton mySaveButton;
+    private JButton myCloseButton;
+    /**
+     * 
+     */
+    private final JFileChooser myFileChooser;
+    /**
+     * 
+     */
+    private PixelImage myImage;
+    
+   // private final JLabel myLabel;
+    
+    //private final List<JButton> myButtons;
+
+    /**
+     * 
+     */
+    private File myFile;
+    /**
+     * 
+     */
+    private final List<Filter> myFilterList;
+    /**
+     * 
+     */
+    private final List<JButton> myButtonList;
+    
+    
+    /**
+     * 
+     */
+    public SnapShopGUI() {
+        
+        myFrame = new JFrame("TCSS 305 SnapShop");
+        myFileChooser = new JFileChooser(".");
+        myFrame.setLocationRelativeTo(null);
+        
+        myButtonList = new ArrayList<JButton>();
+        myFilterList = new ArrayList<Filter>();
+        
+        myImageHolder = new JLabel();
+        
+        
+        //myFrame.setMinimumSize(SCREEN_SIZE);
+        
+        
+        //myFrame = new JPanel(new GridBadLayout)
+        
+    }
+    /**
+     * 
+     */
+    public void start() {
+        final JPanel mainPanel = new JPanel(new BorderLayout());
+        myUtilityPanel = new JPanel(new FlowLayout());
+        createOptionButtons();
+//        myImagePanel = new JPanel(new BorderLayout());
+//        myFilterPanel = new JPanel(new FlowLayout());
+
+//        myImagePanel.add(myFilterPanel, BorderLayout.NORTH);
+//        myImagePanel.add(myImageHolder, BorderLayout.CENTER);
+//        myImagePanel.add(myUtilityPanel, BorderLayout.SOUTH);
+        
+//        myImageHolder = new JLabel();
+//        myImageHolder.setHorizontalAlignment(JLabel.CENTER);
+//        myImageHolder.setVerticalAlignment(JLabel.CENTER); 
+        
+        //myImagePanel.add(myImageHolder, BorderLayout.CENTER);
+        
+        //createFilterButtons(myFilterPanel);
+        
+        myUtilityPanel.add(myOpenButton);
+        myUtilityPanel.add(mySaveButton);
+        myUtilityPanel.add(myCloseButton);
+        
+        mainPanel.add(myUtilityPanel, BorderLayout.SOUTH);
+        myFrame.add(myUtilityPanel, BorderLayout.SOUTH);
+        //myFrame.add(myImagePanel, BorderLayout.CENTER);
+        //myFrame.add(myUtilityPanel, BorderLayout.SOUTH);
+        
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        myFrame.pack();
+        
+        myFrame.setMinimumSize(new Dimension(myFrame.getWidth(), myFrame.getHeight()));
+        
+        myFrame.setVisible(true);
+    }
+    /**
+     * 
+     * @param thePanel 
+     */
+    private void createFilterButtons() {
+        myFilterList.add(new EdgeDetectFilter());
+        myFilterList.add(new EdgeHighlightFilter());
+        myFilterList.add(new FlipHorizontalFilter());
+        myFilterList.add(new FlipVerticalFilter());
+        myFilterList.add(new GrayscaleFilter());
+        myFilterList.add(new SharpenFilter());
+        myFilterList.add(new SoftenFilter());
+        
+        //final Component[] compArray = thePanel.getComponents();
+        
+        for (int i = 0; i < FILTERS; i++) {
+            myButtonList.add(createFilterButtons(myFilterList.get(i)));
+            //myFilterPanel.add(myButtonList);
+        }
+                        
+    }
+    /**
+     * 
+     * @param theFilter 
+     * @return filterButton
+     */
+    private JButton createFilterButtons(final Filter theFilter) {
+        final JButton filterButton = new JButton(theFilter.getDescription());
+        filterButton.addActionListener(new ActionListener() {
+            /**
+             * 
+             */
+            @Override
+            public void actionPerformed(final ActionEvent theAction) {
+                theFilter.filter(myImage);
+                myImageHolder.setIcon(new ImageIcon(myImage));
+                myFrame.pack();
+            }
+            
+        });
+        return filterButton;
+    }
+    /**
+     * 
+     * @param theUse 
+     */
+    private void enableButtons(final Boolean theUse) {
+        for (final JButton b: myButtonList) {
+            b.setEnabled(theUse);
+        }
+    }
+    /**
+     * 
+     */
+    private void createOptionButtons() {
+        myOpenButton = new JButton("Open...");
+        mySaveButton = new JButton("Save as...");
+        myCloseButton = new JButton("Close Image");
+        mySaveButton.setEnabled(false);
+        myCloseButton.setEnabled(false);
+        
+        myUtilityPanel.add(myOpenButton);
+        myUtilityPanel.add(mySaveButton);
+        myUtilityPanel.add(myCloseButton);
+        
+        myOpenButton.addActionListener(new OpenButtonListener());
+        mySaveButton.addActionListener(new SaveButtonListener());
+        myCloseButton.addActionListener(new CloseButtonListener());
+    }
+    /**
+     * 
+     * @author Patrick Stevens
+     *
+     */
+    class OpenButtonListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(final ActionEvent theAction) {
+            if (myFileChooser.showOpenDialog(myFrame) == (JFileChooser.APPROVE_OPTION)) {
+                myFile = myFileChooser.getSelectedFile(); 
+                try {
+                    myImage = PixelImage.load(myFile);
+                    myImageHolder.setIcon(new ImageIcon(myImage));
+                    myFrame.pack();
+                    
+                    myFrame.setMinimumSize(new Dimension(myFrame.getWidth(),
+                                                         myFrame.getHeight()));
+                    myFrame.setLocation(SCREEN_WIDTH / 2 - myFrame.getWidth() / 2, 
+                                        SCREEN_HEIGHT / 2 - myFrame.getHeight() / 2);
+                    enableButtons(true);
+                } catch (final IOException ioe) {
+                    JOptionPane.showMessageDialog(myFrame,
+                                                "The selected file did not contain an image!",
+                                                  "Error!", JOptionPane.ERROR_MESSAGE);
+                }
+            }  
+        }  
+    }
+    /**
+     * 
+     * @author Patrick
+     *
+     */
+    class SaveButtonListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(final ActionEvent theAction) {
+            if (myFileChooser.showSaveDialog(myFrame) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    myImage.save(myFileChooser.getSelectedFile());
+                } catch (final IOException ioe) {
+                    JOptionPane.showMessageDialog(myFrame, 
+                                                  "There was an issue saving the file!",
+                                                  "Save Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }  
+    }
+    /**
+     * 
+     * @author Patrick
+     *
+     */
+    class CloseButtonListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(final ActionEvent theAction) {
+            myImageHolder.setIcon(null);
+            enableButtons(false);
+            myFrame.pack();
+            myFrame.setMinimumSize(new Dimension(myFrame.getWidth(),
+                                                 myFrame.getHeight()));
+            myFrame.setLocation(SCREEN_WIDTH / 2 - myFrame.getWidth() / 2, 
+                                SCREEN_HEIGHT / 2 - myFrame.getHeight() / 2);
+  
+        }
+        
+    }
+}
